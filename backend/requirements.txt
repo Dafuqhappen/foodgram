@@ -1,0 +1,52 @@
+# Django и основные зависимости
+Django==4.2.7
+djangorestframework==3.14.0
+django-filter==23.5
+django-cors-headers==4.3.1
+
+# Аутентификация и авторизация
+djoser==2.2.0
+
+# Работа с изображениями (совместимо с Python 3.13)
+Pillow==10.4.0
+drf-extra-fields==3.7.0
+
+# База данных (PostgreSQL для Python 3.13)
+psycopg[binary]==3.2.3
+
+# Переменные окружения
+python-dotenv==1.0.0
+
+# Продакшен сервер
+gunicorn==21.2.0
+
+# Статические файлы в продакшене
+whitenoise==6.6.0
+
+# Разработка и тестирование
+flake8==6.1.0
+coverage==7.3.2
+django-extensions==3.2.3
+
+# Совместимость и утилиты
+pytz==2023.3
+requests==2.31.0
+
+# Линтинг и форматирование кода
+flake8==6.1.0
+black==23.11.0
+isort==5.12.0
+
+# Тестирование
+pytest==7.4.3
+pytest-django==4.7.0
+pytest-cov==4.1.0
+factory-boy==3.3.0
+
+# Отладка и разработка
+django-debug-toolbar==4.2.0
+ipython==8.17.2
+jupyter==1.0.0
+
+# Документация API
+drf-spectacular==0.26.5 
