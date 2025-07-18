@@ -8,16 +8,16 @@ from recipes.views import RecipeViewSet
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-
     path("api/", include(("api.urls", "api"), namespace="api")),
-
     path(
         "s/<int:pk>/",
         RecipeViewSet.as_view({"get": "retrieve"}),
-        name="recipe-short-link"
+        name="recipe-short-link",
     ),
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(
+        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
+    )
     urlpatterns += staticfiles_urlpatterns()

@@ -7,22 +7,22 @@ INGREDIENT_MEASUREMENT_MAX_LEN = 32
 RECIPE_TITLE_MAX_LEN = 128
 
 # Пути для загрузки файлов
-RECIPE_IMAGE_STORAGE_PATH = 'recipes/images/'
+RECIPE_IMAGE_STORAGE_PATH = "recipes/images/"
 
 # Валидаторы cooking_time (минут)
 RECIPE_MIN_PREP_MINUTES = 1
 RECIPE_MAX_PREP_MINUTES = 1440
 
 # Цвет (HEX)
-TAG_COLOR_REGEX = r'^#([A-Fa-f0-9]{6})$'
+TAG_COLOR_REGEX = r"^#([A-Fa-f0-9]{6})$"
 
 # Валидаторы для количества ингредиента в рецепте
 RECIPE_MIN_AMOUNT = 1
 RECIPE_MAX_AMOUNT = 10000  # лимит на адекватное количество (по ситуации)
 
 # Остальные лимиты и значения для пользователей
-USER_AVATAR_UPLOAD_TO = 'users/avatars/'
+USER_AVATAR_UPLOAD_TO = "users/avatars/"
 USER_EMAIL_MAX_LENGTH = 254
 USER_NAME_MAX_LENGTH = 150
 USER_USERNAME_MAX_LENGTH = 150
-USERNAME_VALIDATION_REGEX = r'^[\w.@+-]+$'
+USERNAME_VALIDATION_REGEX = r"^[\w.@+-]+$"

@@ -58,7 +58,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "measurement_unit",
-                    models.CharField(max_length=32, verbose_name="Единица измерения"),
+                    models.CharField(
+                        max_length=32, verbose_name="Единица измерения"
+                    ),
                 ),
             ],
             options={
@@ -82,16 +84,24 @@ class Migration(migrations.Migration):
                 (
                     "name",
                     models.CharField(
-                        db_index=True, max_length=128, verbose_name="Название рецепта"
+                        db_index=True,
+                        max_length=128,
+                        verbose_name="Название рецепта",
                     ),
                 ),
                 (
                     "image",
                     models.ImageField(
-                        upload_to="recipes/images/", verbose_name="Изображение рецепта"
+                        upload_to="recipes/images/",
+                        verbose_name="Изображение рецепта",
                     ),
                 ),
-                ("text", models.TextField(verbose_name="Инструкция по приготовлению")),
+                (
+                    "text",
+                    models.TextField(
+                        verbose_name="Инструкция по приготовлению"
+                    ),
+                ),
                 (
                     "cooking_time",
                     models.PositiveSmallIntegerField(
@@ -105,7 +115,9 @@ class Migration(migrations.Migration):
                 (
                     "pub_date",
                     models.DateTimeField(
-                        auto_now_add=True, db_index=True, verbose_name="Дата публикации"
+                        auto_now_add=True,
+                        db_index=True,
+                        verbose_name="Дата публикации",
                     ),
                 ),
             ],
@@ -131,7 +143,9 @@ class Migration(migrations.Migration):
                 (
                     "amount",
                     models.PositiveSmallIntegerField(
-                        validators=[django.core.validators.MinValueValidator(1)],
+                        validators=[
+                            django.core.validators.MinValueValidator(1)
+                        ],
                         verbose_name="Количество",
                     ),
                 ),
@@ -187,14 +201,18 @@ class Migration(migrations.Migration):
                         verbose_name="Имя тега",
                     ),
                 ),
-                ("slug", models.SlugField(unique=True, verbose_name="Slug тега")),
+                (
+                    "slug",
+                    models.SlugField(unique=True, verbose_name="Slug тега"),
+                ),
                 (
                     "color",
                     models.CharField(
                         max_length=7,
                         validators=[
                             django.core.validators.RegexValidator(
-                                "^#([A-Fa-f0-9]{6})$", message="HEX формат #RRGGBB"
+                                "^#([A-Fa-f0-9]{6})$",
+                                message="HEX формат #RRGGBB",
                             )
                         ],
                         verbose_name="Цвет HEX",
@@ -210,19 +228,22 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="tag",
             constraint=models.CheckConstraint(
-                check=models.Q(("name", ""), _negated=True), name="tag_name_not_empty"
+                check=models.Q(("name", ""), _negated=True),
+                name="tag_name_not_empty",
             ),
         ),
         migrations.AddConstraint(
             model_name="tag",
             constraint=models.CheckConstraint(
-                check=models.Q(("slug", ""), _negated=True), name="tag_slug_not_empty"
+                check=models.Q(("slug", ""), _negated=True),
+                name="tag_slug_not_empty",
             ),
         ),
         migrations.AddConstraint(
             model_name="tag",
             constraint=models.CheckConstraint(
-                check=models.Q(("color", ""), _negated=True), name="tag_color_not_empty"
+                check=models.Q(("color", ""), _negated=True),
+                name="tag_color_not_empty",
             ),
         ),
         migrations.AddField(

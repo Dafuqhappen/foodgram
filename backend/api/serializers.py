@@ -23,16 +23,16 @@ from recipes.serializers import (
 
 # Для обратной совместимости
 __all__ = [
-    'UserSerializer',
-    'CustomUserSerializer',
-    'CustomUserCreateSerializer',
-    'UserWithRecipesSerializer',
-    'SubscriptionSerializer',
-    'TagSerializer',
-    'IngredientSerializer',
-    'RecipeReadSerializer',
-    'RecipeWriteSerializer',
-    'ShortRecipeSerializer',
-    'FavoriteSerializer',
-    'ShoppingCartSerializer',
+    "UserSerializer",
+    "CustomUserSerializer",
+    "CustomUserCreateSerializer",
+    "UserWithRecipesSerializer",
+    "SubscriptionSerializer",
+    "TagSerializer",
+    "IngredientSerializer",
+    "RecipeReadSerializer",
+    "RecipeWriteSerializer",
+    "ShortRecipeSerializer",
+    "FavoriteSerializer",
+    "ShoppingCartSerializer",
 ]
