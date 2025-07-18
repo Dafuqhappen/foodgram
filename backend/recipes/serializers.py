@@ -9,7 +9,7 @@ from recipes.models import (
 
 class TagSerializer(serializers.ModelSerializer):
     """Сериализатор для тегов."""
-    
+
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
@@ -18,7 +18,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 class IngredientSerializer(serializers.ModelSerializer):
     """Сериализатор для ингредиентов."""
-    
+
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
@@ -81,15 +81,15 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, recipe):
         user = self.context['request'].user
         return (
-            user.is_authenticated and 
-            Favorite.objects.filter(user=user, recipe=recipe).exists()
+            user.is_authenticated
+            and Favorite.objects.filter(user=user, recipe=recipe).exists()
         )
 
     def get_is_in_shopping_cart(self, recipe):
         user = self.context['request'].user
         return (
-            user.is_authenticated and 
-            ShoppingCart.objects.filter(user=user, recipe=recipe).exists()
+            user.is_authenticated
+            and ShoppingCart.objects.filter(user=user, recipe=recipe).exists()
         )
 
 
@@ -110,13 +110,13 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Необходимо указать хотя бы один ингредиент.'
             )
-        
+
         ingredient_ids = [item['ingredient'].id for item in value]
         if len(ingredient_ids) != len(set(ingredient_ids)):
             raise serializers.ValidationError(
                 'Ингредиенты не должны повторяться.'
             )
-        
+
         return value
 
     def create_ingredients(self, recipe, ingredients_data):
@@ -140,7 +140,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         tags = validated_data.pop('tags', None)
         ingredients = validated_data.pop('ingredients', None)
-        
+
         if tags is not None:
             instance.tags.set(tags)
         if ingredients is not None:
@@ -154,7 +154,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
 
 class FavoriteSerializer(serializers.ModelSerializer):
     """Сериализатор для избранного."""
-    
+
     class Meta:
         model = Favorite
         fields = ('user', 'recipe')
@@ -165,7 +165,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
     """Сериализатор для корзины покупок."""
-    
+
     class Meta:
         model = ShoppingCart
         fields = ('user', 'recipe')

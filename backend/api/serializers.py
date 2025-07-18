@@ -24,7 +24,7 @@ from recipes.serializers import (
 # Для обратной совместимости
 __all__ = [
     'UserSerializer',
-    'CustomUserSerializer', 
+    'CustomUserSerializer',
     'CustomUserCreateSerializer',
     'UserWithRecipesSerializer',
     'SubscriptionSerializer',

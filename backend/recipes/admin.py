@@ -98,9 +98,11 @@ class UserRecipeAdminMixin:
     autocomplete_fields = ('user', 'recipe')
     list_select_related = ('user', 'recipe')
 
+
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(UserRecipeAdminMixin, admin.ModelAdmin):
     pass
+
 
 @admin.register(Favorite)
 class FavoriteAdmin(UserRecipeAdminMixin, admin.ModelAdmin):

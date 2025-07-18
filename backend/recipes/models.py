@@ -17,6 +17,7 @@ from foodgram.constants import (
 
 User = get_user_model()
 
+
 class Tag(models.Model):
     name = models.CharField(
         max_length=TAG_NAME_MAX_LEN,
@@ -50,6 +51,7 @@ class Tag(models.Model):
     def __str__(self):
         return f"{self.name} [{self.color}]"
 
+
 class Ingredient(models.Model):
     name = models.CharField(
         max_length=INGREDIENT_NAME_MAX_LEN,
@@ -77,6 +79,7 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.measurement_unit})"
+
 
 class Recipe(models.Model):
     author = models.ForeignKey(
@@ -133,6 +136,7 @@ class Recipe(models.Model):
     def __str__(self):
         return f"{self.name} (автор: {self.author.username})"
 
+
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
         Recipe,
@@ -165,6 +169,7 @@ class RecipeIngredient(models.Model):
     def __str__(self):
         return f"{self.ingredient.name}: {self.amount} {self.ingredient.measurement_unit}"
 
+
 class Favorite(models.Model):
     user = models.ForeignKey(
         User,
@@ -195,6 +200,7 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f'{self.user} -> {self.recipe}'
+
 
 class ShoppingCart(models.Model):
     user = models.ForeignKey(

@@ -10,6 +10,7 @@ from foodgram.constants import (
     USERNAME_VALIDATION_REGEX,
 )
 
+
 class CustomUser(AbstractUser):
     """Кастомная модель пользователя Foodgram."""
     email = models.EmailField(
@@ -54,6 +55,7 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
 
 class Subscription(models.Model):
     """Подписка на автора."""
