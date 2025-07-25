@@ -93,8 +93,8 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "backend/*"
-          target: "foodgram/backend/"
+          source: "backend"
+          target: "foodgram"
       - name: Copy frontend to server
         uses: appleboy/scp-action@master
         with:
@@ -102,8 +102,8 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "frontend/*"
-          target: "foodgram/frontend/"
+          source: "frontend"
+          target: "foodgram"
 
   deploy:
     runs-on: ubuntu-latest
