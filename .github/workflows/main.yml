@@ -84,8 +84,8 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "infra/*"
-          target: "foodgram/infra/"
+          source: "infra"
+          target: "foodgram"
       - name: Copy backend to server
         uses: appleboy/scp-action@master
         with:
