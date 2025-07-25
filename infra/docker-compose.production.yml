@@ -3,13 +3,13 @@ services:
 
   frontend:
     container_name: foodgram-front
-    image: maxten/foodgram_frontend:latest
+    image: dafuqhappen/foodgram_frontend:latest
     volumes:
       - frontend_build:/app/result_build/
 
   backend:
     container_name: foodgram-backend
-    image: maxten/foodgram_backend:latest
+    image: dafuqhappen/foodgram_backend:latest
     env_file:
       - .env
     volumes:
