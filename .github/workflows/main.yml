@@ -1,11 +1,3 @@
-name: Foodgram CI/CD
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -23,7 +15,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -71,11 +63,44 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
 
-  deploy:
+  copy_files_to_server:
+    name: Copy project files to server
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
-    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Copy infra to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          source: "infra/*"
+          target: "foodgram/infra/"
+      - name: Copy backend to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          source: "backend/*"
+          target: "foodgram/backend/"
+      - name: Copy frontend to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          source: "frontend/*"
+          target: "foodgram/frontend/"
 
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build_and_push_to_docker_hub, copy_files_to_server]
+    if: github.ref == 'refs/heads/main'
     steps:
     - name: executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
@@ -102,4 +127,4 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: Деплой проекта foodgram успешно выполнен! 
+        message: Деплой проекта foodgram успешно выполнен!
