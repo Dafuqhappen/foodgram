@@ -1,19 +1,13 @@
-#!/usr/bin/env python
-"""
-Скрипт для создания минимальных тестовых данных.
-Запускать из директории backend после настройки Django окружения.
-"""
 import os
 import sys
 import django
 
-# Настройка Django окружения
+from recipes.models import Tag, Ingredient
+
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'foodgram.settings')
 django.setup()
-
-from recipes.models import Tag, Ingredient
-
 
 def create_test_tags():
     """Создание тестовых тегов."""
@@ -22,7 +16,7 @@ def create_test_tags():
         {"name": "Обед", "slug": "lunch", "color": "#49B64E"},
         {"name": "Ужин", "slug": "dinner", "color": "#8775D2"},
     ]
-    
+
     created_count = 0
     for tag_data in tags_data:
         tag, created = Tag.objects.get_or_create(**tag_data)
@@ -31,7 +25,7 @@ def create_test_tags():
             print(f"Создан тег: {tag.name}")
         else:
             print(f"Тег уже существует: {tag.name}")
-    
+
     print(f"Создано тегов: {created_count}")
     return Tag.objects.count()
 
@@ -45,7 +39,7 @@ def create_test_ingredients():
         {"name": "Сахар", "measurement_unit": "г"},
         {"name": "Соль", "measurement_unit": "г"},
     ]
-    
+
     created_count = 0
     for ingredient_data in ingredients_data:
         ingredient, created = Ingredient.objects.get_or_create(
@@ -64,27 +58,25 @@ def create_test_ingredients():
 def main():
     """Основная функция инициализации данных."""
     print("Инициализация тестовых данных...")
-    
-    # Создание тегов
+
     print("\n--- Создание тегов ---")
     total_tags = create_test_tags()
-    
-    # Создание ингредиентов  
+
     print("\n--- Создание ингредиентов ---")
     total_ingredients = create_test_ingredients()
-    
+
     print("\n--- Результат ---")
     print(f"Всего тегов в БД: {total_tags}")
     print(f"Всего ингредиентов в БД: {total_ingredients}")
-    
+
     if total_tags >= 3 and total_ingredients >= 2:
         print("✅ Минимальные данные для тестов созданы успешно!")
     else:
         print("❌ Недостаточно данных для тестов")
         return 1
-    
+
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main()) 
+    sys.exit(main())

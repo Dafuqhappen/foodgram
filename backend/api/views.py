@@ -114,7 +114,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'attachment; filename="shopping_list.txt"'
         )
         return response
-    
+
     @action(
         detail=True,
         methods=["get"],
@@ -148,6 +148,7 @@ class CustomUserViewSet(DjoserUserViewSet):
         if self.action in ("retrieve", "list"):
             return [AllowAny()]
         return super().get_permissions()
+
     @action(
         detail=False,
         methods=["get"],
