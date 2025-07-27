@@ -16,7 +16,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ("id", "name", "color", "slug")
+        fields = ("id", "name", "slug")
         read_only_fields = fields
 
 
@@ -62,6 +62,12 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ("id", "name", "image", "cooking_time")
         read_only_fields = fields
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        if rep.get("image") is None:
+            rep["image"] = ""
+        return rep
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):
@@ -111,6 +117,11 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             and ShoppingCart.objects.filter(user=user, recipe=recipe).exists()
         )
 
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        if rep.get("image") is None:
+            rep["image"] = ""
+        return rep
 
 class RecipeWriteSerializer(serializers.ModelSerializer):
     """Сериализатор для записи рецептов."""
@@ -133,6 +144,20 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             "cooking_time",
         )
 
+    def validate_tags(self, value):
+        if not value:
+            raise serializers.ValidationError(
+                "Необходимо указать хотя бы один тег."
+            )
+
+        tag_ids = [tag.id for tag in value]
+        if len(tag_ids) != len(set(tag_ids)):
+            raise serializers.ValidationError(
+                "Теги не должны повторяться."
+            )
+
+        return value
+
     def validate_ingredients(self, value):
         if not value:
             raise serializers.ValidationError(
@@ -145,6 +170,13 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                 "Ингредиенты не должны повторяться."
             )
 
+        return value
+
+    def validate_image(self, value):
+        if not value:
+            raise serializers.ValidationError(
+                "Необходимо добавить изображение."
+            )
         return value
 
     def create_ingredients(self, recipe, ingredients_data):
@@ -170,11 +202,32 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         tags = validated_data.pop("tags", None)
         ingredients = validated_data.pop("ingredients", None)
 
-        if tags is not None:
-            instance.tags.set(tags)
-        if ingredients is not None:
-            instance.recipe_ingredients.all().delete()
-            self.create_ingredients(instance, ingredients)
+        if ingredients is None:
+            raise serializers.ValidationError({
+                "ingredients": ["Необходимо указать хотя бы один ингредиент."]
+            })
+        if not ingredients:
+            raise serializers.ValidationError({
+                "ingredients": ["Необходимо указать хотя бы один ингредиент."]
+            })
+        instance.recipe_ingredients.all().delete()
+        self.create_ingredients(instance, ingredients)
+
+        if tags is None:
+            raise serializers.ValidationError({
+                "tags": ["Необходимо указать хотя бы один тег."]
+            })
+        if not tags:
+            raise serializers.ValidationError({
+                "tags": ["Необходимо указать хотя бы один тег."]
+            })
+        instance.tags.set(tags)
+
+        if "image" in validated_data and not validated_data["image"]:
+            raise serializers.ValidationError({
+                "image": ["Необходимо добавить изображение."]
+            })
+
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):

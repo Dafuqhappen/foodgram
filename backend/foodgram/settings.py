@@ -9,9 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv(key="SECRET_KEY")
 
-DEBUG = os.getenv("DEBUG", "False").lower() == "True"
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -94,10 +94,16 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "api.pagination.CustomPagination",
     "PAGE_SIZE": 6,
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
     ],
 }
 
@@ -109,7 +115,8 @@ DJOSER = {
     },
     "PERMISSIONS": {
         "user": ["djoser.permissions.CurrentUserOrAdminOrReadOnly"],
-        "user_list": ["rest_framework.permissions.IsAuthenticatedOrReadOnly"],
+        "user_list": ["rest_framework.permissions.AllowAny"],
+        "user_create": ["rest_framework.permissions.AllowAny"],
     },
     "HIDE_USERS": False,
 }

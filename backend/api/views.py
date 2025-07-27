@@ -19,6 +19,7 @@ from recipes.serializers import (
 from users.serializers import UserWithRecipesSerializer, UserSerializer
 from api.filters import RecipeFilter, IngredientFilter
 from api.permissions import IsAuthorOrReadOnly
+from api.pagination import CustomPagination
 
 User = get_user_model()
 
@@ -27,6 +28,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+    pagination_class = CustomPagination
 
     def get_permissions(self):
         if self.request.method in SAFE_METHODS:
@@ -112,6 +114,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'attachment; filename="shopping_list.txt"'
         )
         return response
+    
+    @action(
+        detail=True,
+        methods=["get"],
+        url_path="get-link",
+        permission_classes=[AllowAny]
+    )
+    def get_link(self, request, pk=None):
+        recipe = self.get_object()
+        short_link = f"http://127.0.0.1:8000/api/recipes/{recipe.pk}/"
+        return Response({"short-link": short_link})
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -131,6 +144,10 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class CustomUserViewSet(DjoserUserViewSet):
+    def get_permissions(self):
+        if self.action in ("retrieve", "list"):
+            return [AllowAny()]
+        return super().get_permissions()
     @action(
         detail=False,
         methods=["get"],
@@ -190,6 +207,11 @@ class CustomUserViewSet(DjoserUserViewSet):
     def avatar(self, request):
         user = request.user
         if request.method == "PUT":
+            if not request.data or 'avatar' not in request.data:
+                return Response(
+                    {"errors": "Файл не передан"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             serializer = UserSerializer(
                 user,
                 data=request.data,
