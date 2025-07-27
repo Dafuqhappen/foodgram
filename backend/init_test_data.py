@@ -9,6 +9,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'foodgram.settings')
 django.setup()
 
+
 def create_test_tags():
     """Создание тестовых тегов."""
     tags_data = [
@@ -50,7 +51,7 @@ def create_test_ingredients():
             print(f"Создан ингредиент: {ingredient.name}")
         else:
             print(f"Ингредиент уже существует: {ingredient.name}")
-    
+
     print(f"Создано ингредиентов: {created_count}")
     return Ingredient.objects.count()
 

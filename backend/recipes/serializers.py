@@ -123,6 +123,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             rep["image"] = ""
         return rep
 
+
 class RecipeWriteSerializer(serializers.ModelSerializer):
     """Сериализатор для записи рецептов."""
 
