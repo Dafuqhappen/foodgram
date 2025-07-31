@@ -8,16 +8,15 @@ from api.views import (
     RecipeViewSet,
 )
 
-app_name = "api"
+app_name = 'api'
 
 router = DefaultRouter()
-router.register("users", CustomUserViewSet, basename="users")
-router.register("tags", TagViewSet, basename="tags")
-router.register("ingredients", IngredientViewSet, basename="ingredients")
-router.register("recipes", RecipeViewSet, basename="recipes")
+router.register('users', CustomUserViewSet, basename='users')
+router.register('tags', TagViewSet, basename='tags')
+router.register('ingredients', IngredientViewSet, basename='ingredients')
+router.register('recipes', RecipeViewSet, basename='recipes')
 
 urlpatterns = [
-    path("", include(router.urls)),
-    path("auth/", include("djoser.urls.authtoken")),
-    path("", include("djoser.urls")),
+    path('', include(router.urls)),
+    path('auth/', include('djoser.urls.authtoken')),
 ]

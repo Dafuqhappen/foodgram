@@ -4,7 +4,6 @@ from django.db import models
 
 from foodgram.constants import (
     USER_AVATAR_UPLOAD_TO,
-    USER_EMAIL_MAX_LENGTH,
     USER_NAME_MAX_LENGTH,
     USER_USERNAME_MAX_LENGTH,
     USERNAME_VALIDATION_REGEX,
@@ -15,7 +14,6 @@ class CustomUser(AbstractUser):
     """Кастомная модель пользователя Foodgram."""
 
     email = models.EmailField(
-        max_length=USER_EMAIL_MAX_LENGTH,
         unique=True,
         verbose_name="Электронная почта",
     )

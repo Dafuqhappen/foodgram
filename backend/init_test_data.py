@@ -2,20 +2,19 @@ import os
 import sys
 import django
 
-from recipes.models import Tag, Ingredient
-
-
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'foodgram.settings')
 django.setup()
+
+from recipes.models import Tag, Ingredient
 
 
 def create_test_tags():
     """Создание тестовых тегов."""
     tags_data = [
-        {"name": "Завтрак", "slug": "breakfast", "color": "#E26C2D"},
-        {"name": "Обед", "slug": "lunch", "color": "#49B64E"},
-        {"name": "Ужин", "slug": "dinner", "color": "#8775D2"},
+        {"name": "Завтрак", "slug": "breakfast"},
+        {"name": "Обед", "slug": "lunch"},
+        {"name": "Ужин", "slug": "dinner"},
     ]
 
     created_count = 0
@@ -81,3 +80,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+ 
