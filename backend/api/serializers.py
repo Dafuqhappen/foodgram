@@ -166,16 +166,16 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         user = getattr(request, "user", None)
         return bool(
-            request and user and user.is_authenticated and
-            Favorite.objects.filter(user=user, recipe=recipe).exists()
+            request and user and user.is_authenticated
+            and Favorite.objects.filter(user=user, recipe=recipe).exists()
         )
 
     def get_is_in_shopping_cart(self, recipe):
         request = self.context.get("request")
         user = getattr(request, "user", None)
         return bool(
-            request and user and user.is_authenticated and
-            ShoppingCart.objects.filter(user=user, recipe=recipe).exists()
+            request and user and user.is_authenticated
+            and ShoppingCart.objects.filter(user=user, recipe=recipe).exists()
         )
 
     def to_representation(self, instance):
@@ -213,7 +213,11 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             )
         if not ingredients:
             raise serializers.ValidationError(
-                {"ingredients": ["Необходимо указать хотя бы один ингредиент."]}
+                {
+                    "ingredients": [
+                        "Необходимо указать хотя бы один ингредиент."
+                    ]
+                }
             )
         ingredient_ids = [item["ingredient"].id for item in ingredients]
         if len(ingredient_ids) != len(set(ingredient_ids)):
@@ -224,7 +228,9 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
 
     def validate_image(self, value):
         if not value:
-            raise serializers.ValidationError("Необходимо добавить изображение.")
+            raise serializers.ValidationError(
+                "Необходимо добавить изображение."
+            )
         return value
 
     @staticmethod
@@ -293,7 +299,9 @@ class FavoriteSerializer(serializers.ModelSerializer):
         return favorite
 
     def to_representation(self, instance):
-        return ShortRecipeSerializer(instance.recipe, context=self.context).data
+        return ShortRecipeSerializer(
+            instance.recipe, context=self.context
+        ).data
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
@@ -328,7 +336,9 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         return cart_item
 
     def to_representation(self, instance):
-        return ShortRecipeSerializer(instance.recipe, context=self.context).data
+        return ShortRecipeSerializer(
+            instance.recipe, context=self.context
+        ).data
 
 
 class UserWithRecipesSerializer(UserSerializer):

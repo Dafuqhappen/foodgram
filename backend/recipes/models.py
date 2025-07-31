@@ -36,7 +36,6 @@ class Tag(models.Model):
         verbose_name="Slug тега",
     )
 
-
     class Meta:
         verbose_name = "Тег"
         verbose_name_plural = "Теги"
@@ -63,7 +62,7 @@ class Ingredient(models.Model):
         verbose_name_plural = "Ингредиенты"
         constraints = [
             models.UniqueConstraint(
-                fields=["name", "measurement_unit"], 
+                fields=["name", "measurement_unit"],
                 name="unique_ingredient"
             ),
         ]
@@ -86,7 +85,7 @@ class Recipe(models.Model):
         verbose_name="Название рецепта",
     )
     image = models.ImageField(
-        upload_to=RECIPE_IMAGE_STORAGE_PATH, 
+        upload_to=RECIPE_IMAGE_STORAGE_PATH,
         verbose_name="Изображение рецепта"
     )
     text = models.TextField(verbose_name="Инструкция по приготовлению")
@@ -94,18 +93,20 @@ class Recipe(models.Model):
         validators=[
             MinValueValidator(
                 RECIPE_MIN_PREP_MINUTES,
-                message=f"Время не может быть меньше {RECIPE_MIN_PREP_MINUTES} мин"
+                message=f"Время не может быть меньше "
+                        f"{RECIPE_MIN_PREP_MINUTES} мин"
             ),
             MaxValueValidator(
                 RECIPE_MAX_PREP_MINUTES,
-                message=f"Время не может быть больше {RECIPE_MAX_PREP_MINUTES} мин"
+                message=f"Время не может быть больше "
+                        f"{RECIPE_MAX_PREP_MINUTES} мин"
             ),
         ],
         verbose_name="Время приготовления (минуты)",
     )
     pub_date = models.DateTimeField(
-        auto_now_add=True, 
-        db_index=True, 
+        auto_now_add=True,
+        db_index=True,
         verbose_name="Дата публикации"
     )
     tags = models.ManyToManyField(
@@ -117,7 +118,9 @@ class Recipe(models.Model):
         related_name="recipes",
         verbose_name="Ингредиенты",
     )
-    short_link = models.CharField(max_length=6, unique=True, blank=True, null=True)
+    short_link = models.CharField(
+        max_length=6, unique=True, blank=True, null=True
+    )
 
     class Meta:
         verbose_name = "Рецепт"
@@ -136,8 +139,12 @@ class Recipe(models.Model):
     def generate_short_link(self):
         characters = string.ascii_letters + string.digits
         while True:
-            short_link = ''.join(random.choice(characters) for _ in range(6))
-            if not Recipe.objects.filter(short_link=short_link).exists():
+            short_link = ''.join(
+                random.choice(characters) for _ in range(6)
+            )
+            if not Recipe.objects.filter(
+                short_link=short_link
+            ).exists():
                 self.short_link = short_link
                 break
 
@@ -162,7 +169,7 @@ class RecipeIngredient(models.Model):
                 INGREDIENT_AMOUNT_MAX,
                 message=f"Максимальное количество: {INGREDIENT_AMOUNT_MAX}"
             )
-        ], 
+        ],
         verbose_name="Количество"
     )
 
@@ -206,7 +213,7 @@ class Favorite(models.Model):
         verbose_name_plural = "Избранные рецепты"
         constraints = [
             models.UniqueConstraint(
-                fields=["user", "recipe"], 
+                fields=["user", "recipe"],
                 name="unique_favorite"
             )
         ]
@@ -237,7 +244,7 @@ class ShoppingCart(models.Model):
         verbose_name_plural = "Рецепты в корзине"
         constraints = [
             models.UniqueConstraint(
-                fields=["user", "recipe"], 
+                fields=["user", "recipe"],
                 name="unique_shopping_cart"
             )
         ]

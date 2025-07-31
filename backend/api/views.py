@@ -13,8 +13,9 @@ from api.pagination import RecipePagination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (
     FavoriteSerializer, IngredientSerializer, RecipeReadSerializer,
-    RecipeWriteSerializer, ShoppingCartSerializer, SubscriptionCreateSerializer,
-    TagSerializer, UserAvatarSerializer, UserWithRecipesSerializer
+    RecipeWriteSerializer, ShoppingCartSerializer,
+    SubscriptionCreateSerializer, TagSerializer, UserAvatarSerializer,
+    UserWithRecipesSerializer
 )
 from recipes.models import (
     Favorite, Ingredient, Recipe, RecipeIngredient, ShoppingCart, Tag
@@ -190,10 +191,10 @@ class CustomUserViewSet(DjoserUserViewSet):
         author = get_object_or_404(User, id=id)
         if not Subscription.objects.filter(user=user, author=author).exists():
             return Response(
-                {"error": "Подписка не найдена."}, 
+                {"error": "Подписка не найдена."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        Subscription.objects.filter(user=user, author=author).delete()        
+        Subscription.objects.filter(user=user, author=author).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(

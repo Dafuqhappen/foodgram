@@ -141,4 +141,4 @@ dmypy.json
 static/
 media/
 
-prepare_and_start_server.py
+.prepare_and_start_server.py
