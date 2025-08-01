@@ -70,9 +70,18 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install rsync
       run: sudo apt-get update && sudo apt-get install -y rsync
+    - name: Prepare SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" | sed 's/\\n/\n/g' > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        # Для отладки (можно удалить после проверки)
+        echo "=== SSH Key ==="
+        head -n 3 ~/.ssh/deploy_key
+        echo "==============="
     - name: Copy infra
       run: |
-        rsync -avz -e "ssh -i ${{ secrets.SSH_KEY }} -o StrictHostKeyChecking=no" \
+        rsync -avz -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
           infra/ ${{ secrets.USER }}@${{ secrets.HOST }}:foodgram/
 
   deploy:
