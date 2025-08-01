@@ -1,7 +1,6 @@
 # Максимальные длины для текстовых полей
 TAG_NAME_MAX_LEN = 50
 TAG_SLUG_MAX_LEN = 50
-TAG_COLOR_MAX_LEN = 7
 INGREDIENT_NAME_MAX_LEN = 128
 INGREDIENT_MEASUREMENT_MAX_LEN = 32
 RECIPE_TITLE_MAX_LEN = 128
@@ -13,9 +12,6 @@ RECIPE_IMAGE_STORAGE_PATH = "recipes/images/"
 # Валидаторы cooking_time (минут)
 RECIPE_MIN_PREP_MINUTES = 1
 RECIPE_MAX_PREP_MINUTES = 1440
-
-# Цвет (HEX)
-TAG_COLOR_REGEX = r"^#([A-Fa-f0-9]{6})$"
 
 # Валидаторы для количества ингредиента в рецепте
 RECIPE_MIN_AMOUNT = 1
