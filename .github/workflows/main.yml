@@ -71,7 +71,7 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
 
-copy_files_to_server:
+  copy_files_to_server:
   name: Copy infra files to server
   runs-on: ubuntu-latest
   needs: build_and_push_to_docker_hub
