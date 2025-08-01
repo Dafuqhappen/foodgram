@@ -2,11 +2,12 @@ import os
 import sys
 
 import django
-from recipes.models import Tag, Ingredient
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'foodgram.settings')
 django.setup()
+
+from recipes.models import Tag, Ingredient
 
 
 def create_test_tags():

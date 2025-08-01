@@ -1,6 +1,8 @@
 frontend/node_modules
 infra/frontend/build
 .env
+backend/.prepare_and_start_server.py
+backend/init_test_data.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

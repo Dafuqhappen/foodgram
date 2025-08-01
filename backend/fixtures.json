@@ -115,8 +115,7 @@
   "pk": 1,
   "fields": {
     "name": "Завтрак",
-    "slug": "breakfast",
-    "color": "#E26C2D"
+    "slug": "breakfast"
   }
 },
 {
@@ -124,8 +123,7 @@
   "pk": 2,
   "fields": {
     "name": "Обед",
-    "slug": "lunch",
-    "color": "#49B64E"
+    "slug": "lunch"
   }
 },
 {
@@ -133,8 +131,7 @@
   "pk": 3,
   "fields": {
     "name": "Ужин",
-    "slug": "dinner",
-    "color": "#8775D2"
+    "slug": "dinner"
   }
 },
 {
