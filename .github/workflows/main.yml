@@ -68,11 +68,26 @@ jobs:
     needs: build_and_push_to_docker_hub
     steps:
     - uses: actions/checkout@v3
+    
     - name: Install rsync
       run: sudo apt-get update && sudo apt-get install -y rsync
-    - name: Copy infra
+
+    - name: Setup SSH connection
       run: |
-        rsync -avz -e "ssh -i ${{ secrets.SSH_KEY }} -o StrictHostKeyChecking=no" \
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" | sed 's/\\n/\n/g' > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+    
+        eval "$(ssh-agent -s)"
+        echo "=== Testing key ==="
+        ssh-keygen -lf ~/.ssh/deploy_key
+        DISPLAY=1 SSH_ASKPASS=/tmp/sshpass.sh ssh-add ~/.ssh/deploy_key <<< "${{ secrets.SSH_PASSPHRASE }}"
+  
+        ssh -o StrictHostKeyChecking=no -T ${{ secrets.USER }}@${{ secrets.HOST }} "echo 'SSH connection successful'"
+
+    - name: Copy infra files
+      run: |
+        rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no" \
           infra/ ${{ secrets.USER }}@${{ secrets.HOST }}:foodgram/
 
   deploy:
@@ -80,24 +95,28 @@ jobs:
     needs: [build_and_push_to_docker_hub, copy_files_to_server]
     if: github.ref == 'refs/heads/main'
     steps:
-    - name: executing remote ssh commands to deploy
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USER }}
-        key: ${{ secrets.SSH_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        script: |
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" | tr -d '\r' | sed 's/\\n/\n/g' > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        eval "$(ssh-agent -s)"
+        echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/deploy_key
+
+    - name: Execute deploy commands
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} "
           cd foodgram
           sudo docker-compose -f infra/docker-compose.production.yml down
           sudo docker-compose -f infra/docker-compose.production.yml pull
           sudo docker-compose -f infra/docker-compose.production.yml up -d
-          sleep 10  # Даем время контейнерам запуститься
+          sleep 10
           sudo docker-compose -f infra/docker-compose.production.yml exec -T backend python manage.py migrate
           sudo docker-compose -f infra/docker-compose.production.yml exec -T backend python manage.py collectstatic --noinput
           if [ -f infra/fixtures.json ]; then
             sudo docker-compose -f infra/docker-compose.production.yml exec -T backend python manage.py loaddata infra/fixtures.json
           fi
+        "
 
   send_message:
     runs-on: ubuntu-latest
