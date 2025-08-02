@@ -75,17 +75,11 @@ jobs:
     - name: Setup SSH with passphrase
       run: |
         mkdir -p ~/.ssh
-        # Сохраняем ключ с правильными переносами строк
-        echo "${{ secrets.SSH_KEY }}" | tr -d '\r' | sed 's/\\n/\n/g' > ~/.ssh/deploy_key
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
         chmod 600 ~/.ssh/deploy_key
-        
-        # Запускаем ssh-agent и добавляем ключ с passphrase
-        eval "$(ssh-agent -s)"
-        echo "${{ secrets.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/deploy_key
-        
-        # Проверка подключения
-        echo "=== SSH connection test ==="
-        ssh -T -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} "echo 'SSH test successful'"
+        sudo apt-get install -y sshpass
+        sshpass -p "${{ secrets.SSH_PASSPHRASE }}" ssh-add ~/.ssh/deploy_key
+
 
     - name: Copy infra files
       run: |
