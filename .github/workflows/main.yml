@@ -72,13 +72,18 @@ jobs:
     - name: Install rsync
       run: sudo apt-get update && sudo apt-get install -y rsync
 
-    - name: Setup SSH with passphrase
+    - name: Setup SSH connection
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+        echo "${{ secrets.SSH_KEY }}" | sed 's/\\n/\n/g' > ~/.ssh/deploy_key
         chmod 600 ~/.ssh/deploy_key
-        sudo apt-get install -y sshpass
-        sshpass -p "${{ secrets.SSH_PASSPHRASE }}" ssh-add ~/.ssh/deploy_key
+    
+        eval "$(ssh-agent -s)"
+        echo "=== Testing key ==="
+        ssh-keygen -lf ~/.ssh/deploy_key
+        DISPLAY=1 SSH_ASKPASS=/tmp/sshpass.sh ssh-add ~/.ssh/deploy_key <<< "${{ secrets.SSH_PASSPHRASE }}"
+  
+        ssh -o StrictHostKeyChecking=no -T ${{ secrets.USER }}@${{ secrets.HOST }} "echo 'SSH connection successful'"
 
 
     - name: Copy infra files
