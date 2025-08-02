@@ -72,33 +72,19 @@ jobs:
     - name: Install rsync
       run: sudo apt-get update && sudo apt-get install -y rsync
 
-    # 🔽 ВСТАВЬТЕ ЭТОТ БЛОК НАЧИНАЯ СЮДА 🔽
     - name: Debug SSH connection
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key.raw
-        echo "=== RAW KEY BEGIN ==="
-        cat ~/.ssh/deploy_key.raw
-        echo "=== RAW KEY END ==="
-        
-        sed 's/\\n/\n/g' ~/.ssh/deploy_key.raw > ~/.ssh/deploy_key
+        echo "${{ secrets.SSH_KEY }}" | tr -d '\r' | sed 's/\\n/\n/g' > ~/.ssh/deploy_key
         chmod 600 ~/.ssh/deploy_key
         
-        echo "=== NORMALIZED KEY ==="
-        cat ~/.ssh/deploy_key
-        echo "=== KEY FINGERPRINT ==="
+        echo "=== Key fingerprint ==="
         ssh-keygen -lf ~/.ssh/deploy_key
         
-        echo "=== SSH DEBUG ==="
-        ssh -vvv -i ~/.ssh/deploy_key \
-          -o StrictHostKeyChecking=no \
-          -o UserKnownHostsFile=/dev/null \
-          ${{ secrets.USER }}@${{ secrets.HOST }} "echo 'SUCCESS'"
-        
-        echo "=== SERVER SSH CONFIG ==="
-        ssh -i ~/.ssh/deploy_key ${{ secrets.USER }}@${{ secrets.HOST }} \
-          "cat /etc/ssh/sshd_config | grep -E 'PubkeyAuth|AuthorizedKeysFile'"
-    # 🔼 ДО СЮДА 🔼
+        ssh -T -o StrictHostKeyChecking=no \
+            -o PreferredAuthentications=publickey \
+            -i ~/.ssh/deploy_key \
+            ${{ secrets.USER }}@${{ secrets.HOST }} "echo 'SSH test successful'"
 
     - name: Copy infra files
       run: |
