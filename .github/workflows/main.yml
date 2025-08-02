@@ -68,27 +68,43 @@ jobs:
     needs: build_and_push_to_docker_hub
     steps:
     - uses: actions/checkout@v3
+    
     - name: Install rsync
       run: sudo apt-get update && sudo apt-get install -y rsync
-    - name: Prepare SSH environment
+
+    # 🔽 ВСТАВЬТЕ ЭТОТ БЛОК НАЧИНАЯ СЮДА 🔽
+    - name: Debug SSH connection
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
-        sed -i 's/\r$//' ~/.ssh/deploy_key
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key.raw
+        echo "=== RAW KEY BEGIN ==="
+        cat ~/.ssh/deploy_key.raw
+        echo "=== RAW KEY END ==="
+        
+        sed 's/\\n/\n/g' ~/.ssh/deploy_key.raw > ~/.ssh/deploy_key
         chmod 600 ~/.ssh/deploy_key
-        echo "=== Key fingerprint ==="
+        
+        echo "=== NORMALIZED KEY ==="
+        cat ~/.ssh/deploy_key
+        echo "=== KEY FINGERPRINT ==="
         ssh-keygen -lf ~/.ssh/deploy_key
-    - name: Debug connection
-      run: |
-        echo "=== Testing connection ==="
-        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+        
+        echo "=== SSH DEBUG ==="
+        ssh -vvv -i ~/.ssh/deploy_key \
+          -o StrictHostKeyChecking=no \
           -o UserKnownHostsFile=/dev/null \
-          ${{ secrets.USER }}@${{ secrets.HOST }} "echo 'SSH connection successful!'"
-    - name: Copy infra
+          ${{ secrets.USER }}@${{ secrets.HOST }} "echo 'SUCCESS'"
+        
+        echo "=== SERVER SSH CONFIG ==="
+        ssh -i ~/.ssh/deploy_key ${{ secrets.USER }}@${{ secrets.HOST }} \
+          "cat /etc/ssh/sshd_config | grep -E 'PubkeyAuth|AuthorizedKeysFile'"
+    # 🔼 ДО СЮДА 🔼
+
+    - name: Copy infra files
       run: |
-        rsync -avz --progress \
-          -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+        rsync -avz --progress -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
           infra/ ${{ secrets.USER }}@${{ secrets.HOST }}:foodgram/
+
   
   deploy:
     runs-on: ubuntu-latest
