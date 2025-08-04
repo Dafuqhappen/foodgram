@@ -50,7 +50,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk=None):
         user = request.user
         recipe = get_object_or_404(Recipe, pk=pk)
-        
         serializer = FavoriteSerializer(
             data={'user': user.id, 'recipe': recipe.id},
             context={'request': request}
@@ -63,15 +62,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def unfavorite(self, request, pk=None):
         user = request.user
         recipe = get_object_or_404(Recipe, pk=pk)
-        
-        deleted_count, _ = Favorite.objects.filter(user=user, recipe=recipe).delete()
-        
+        deleted_count, _ = Favorite.objects.filter(
+            user=user, recipe=recipe
+        ).delete()
         if deleted_count == 0:
             return Response(
                 {"error": "Рецепт не найден в избранном."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
@@ -79,8 +77,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk=None):
         user = request.user
-        recipe = get_object_or_404(Recipe, pk=pk)
-        
+        recipe = get_object_or_404(Recipe, pk=pk) 
         serializer = ShoppingCartSerializer(
             data={'user': user.id, 'recipe': recipe.id},
             context={'request': request}
@@ -93,17 +90,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def remove_shopping_cart(self, request, pk=None):
         user = request.user
         recipe = get_object_or_404(Recipe, pk=pk)
-        
         deleted_count, _ = ShoppingCart.objects.filter(
             user=user, recipe=recipe
         ).delete()
-        
         if deleted_count == 0:
             return Response(
                 {"error": "Рецепт не найден в корзине."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
