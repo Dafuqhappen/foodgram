@@ -1,12 +1,9 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
 from django.db import models
 
 from foodgram.constants import (
     USER_AVATAR_UPLOAD_TO,
     USER_NAME_MAX_LENGTH,
-    USER_USERNAME_MAX_LENGTH,
-    USERNAME_VALIDATION_REGEX,
 )
 
 
@@ -16,22 +13,6 @@ class CustomUser(AbstractUser):
     email = models.EmailField(
         unique=True,
         verbose_name='Электронная почта',
-    )
-    username = models.CharField(
-        max_length=USER_USERNAME_MAX_LENGTH,
-        unique=True,
-        verbose_name='Никнейм',
-        validators=[
-            RegexValidator(
-                regex=USERNAME_VALIDATION_REGEX,
-                message=(
-                    'Имя пользователя может содержать только буквы, '
-                    'цифры и символы . @ + - _'
-                ),
-            )
-        ],
-        db_index=True,
-        help_text='Переопределено для добавления валидации символов.',
     )
     first_name = models.CharField(
         max_length=USER_NAME_MAX_LENGTH, verbose_name='Имя'
