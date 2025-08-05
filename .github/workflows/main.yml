@@ -98,11 +98,20 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd foodgram
+            # Проверяем, что файл скопировался
+            if [ ! -f docker-compose.production.yml ]; then
+              echo "Error: docker-compose.production.yml not found!"
+              exit 1
+            fi
+            # Очищаем все и принудительно удаляем контейнеры
             sudo docker system prune -af
             sudo docker compose -f docker-compose.production.yml down --remove-orphans
+            sudo docker rm -f foodgram-db foodgram-backend foodgram-front foodgram-proxy 2>/dev/null || true
+            # Запускаем проект
             sudo docker compose -f docker-compose.production.yml pull
             sudo docker compose -f docker-compose.production.yml up -d
             sleep 10
+            # Выполняем миграции и настройку
             sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py migrate
             sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py collectstatic --noinput
             sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py setup_review
