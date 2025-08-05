@@ -99,8 +99,8 @@ jobs:
           script: |
             cd foodgram
             sudo docker system prune -af
+            sudo docker compose -f docker-compose.production.yml down --remove-orphans
             sudo docker compose -f docker-compose.production.yml pull
-            sudo docker compose -f docker-compose.production.yml down
             sudo docker compose -f docker-compose.production.yml up -d
             sleep 10
             sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py migrate
