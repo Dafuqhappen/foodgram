@@ -108,11 +108,28 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd foodgram
-            # Проверяем, что файл скопировался
+            # Проверяем, что файлы скопировались
             if [ ! -f docker-compose.production.yml ]; then
               echo "Error: docker-compose.production.yml not found!"
               exit 1
             fi
+            if [ ! -f nginx.conf ]; then
+              echo "Error: nginx.conf not found!"
+              exit 1
+            fi
+            echo "=== Проверка файлов ==="
+            echo "Содержимое директории:"
+            ls -la
+            echo ""
+            echo "Размер nginx.conf:"
+            ls -lh nginx.conf
+            echo ""
+            echo "Первые 10 строк nginx.conf:"
+            head -10 nginx.conf
+            echo ""
+            echo "Права доступа nginx.conf:"
+            stat nginx.conf
+            echo "=== Конец проверки ==="
             # Очищаем все и принудительно удаляем контейнеры
             sudo docker system prune -af
             sudo docker compose -f docker-compose.production.yml down --remove-orphans
