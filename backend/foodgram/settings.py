@@ -146,9 +146,7 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-# Разрешить все origins в режиме разработки
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 
-# WhiteNoise настройки для статики
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
