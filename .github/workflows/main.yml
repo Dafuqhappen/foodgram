@@ -98,15 +98,14 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd foodgram
-            sudo docker-compose -f infra/docker-compose.production.yml down
-            sudo docker-compose -f infra/docker-compose.production.yml pull
-            sudo docker-compose -f infra/docker-compose.production.yml up -d
+            sudo docker system prune -af
+            sudo docker compose -f docker-compose.production.yml pull
+            sudo docker compose -f docker-compose.production.yml down
+            sudo docker compose -f docker-compose.production.yml up -d
             sleep 10
-            sudo docker-compose -f infra/docker-compose.production.yml exec -T backend python manage.py migrate
-            sudo docker-compose -f infra/docker-compose.production.yml exec -T backend python manage.py collectstatic --noinput
-            if [ -f infra/fixtures.json ]; then
-              sudo docker-compose -f infra/docker-compose.production.yml exec -T backend python manage.py loaddata infra/fixtures.json
-            fi
+            sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py migrate
+            sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py collectstatic --noinput
+            sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py setup_review
 
   send_message:
     runs-on: ubuntu-latest
