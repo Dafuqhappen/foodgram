@@ -77,7 +77,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk=None):
         user = request.user
-        recipe = get_object_or_404(Recipe, pk=pk) 
+        recipe = get_object_or_404(Recipe, pk=pk)
         serializer = ShoppingCartSerializer(
             data={'user': user.id, 'recipe': recipe.id},
             context={'request': request}
