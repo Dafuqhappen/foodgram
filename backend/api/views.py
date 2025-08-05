@@ -65,7 +65,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         deleted_count, _ = Favorite.objects.filter(
             user=user, recipe=recipe
         ).delete()
-        if deleted_count == 0:
+        if not deleted_count:
             return Response(
                 {"error": "Рецепт не найден в избранном."},
                 status=status.HTTP_400_BAD_REQUEST
@@ -77,7 +77,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk=None):
         user = request.user
-        recipe = get_object_or_404(Recipe, pk=pk)
+        recipe = get_object_or_404(Recipe, pk=pk) 
         serializer = ShoppingCartSerializer(
             data={'user': user.id, 'recipe': recipe.id},
             context={'request': request}
@@ -93,7 +93,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         deleted_count, _ = ShoppingCart.objects.filter(
             user=user, recipe=recipe
         ).delete()
-        if deleted_count == 0:
+        if not deleted_count:
             return Response(
                 {"error": "Рецепт не найден в корзине."},
                 status=status.HTTP_400_BAD_REQUEST
@@ -198,7 +198,7 @@ class CustomUserViewSet(DjoserUserViewSet):
         deleted_count, _ = Subscription.objects.filter(
             user=user, author=author
         ).delete()
-        if deleted_count == 0:
+        if not deleted_count:
             return Response(
                 {'error': 'Подписка не найдена.'},
                 status=status.HTTP_400_BAD_REQUEST
