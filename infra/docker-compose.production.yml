@@ -6,7 +6,6 @@ services:
     image: dafuqhappen/foodgram_frontend:latest
     volumes:
       - frontend_build:/app/result_build/
-    command: sh -c "npm run build && cp -r build/* result_build/"
 
   backend:
     container_name: foodgram-backend
@@ -17,8 +16,7 @@ services:
       - static_data:/app/static/
       - media_data:/app/media/
     depends_on:
-      db:
-        condition: service_healthy
+      - db
 
   db:
     image: postgres:15
@@ -28,11 +26,6 @@ services:
       - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   nginx:
     container_name: foodgram-proxy
