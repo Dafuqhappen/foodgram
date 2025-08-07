@@ -33,7 +33,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - /home/yc-user/foodgram/nginx.conf:/etc/nginx/conf.d/default.conf
       - frontend_build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
       - static_data:/static/
