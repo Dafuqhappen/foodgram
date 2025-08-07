@@ -67,11 +67,11 @@ class Command(BaseCommand):
         Создает тестовые данные: теги, ингредиенты, пользователей и рецепты.
         """
         tags_data = [
-            {'name': 'Завтрак', 'slug': 'breakfast', 'color': '#FF6B6B'},
-            {'name': 'Обед', 'slug': 'lunch', 'color': '#4ECDC4'},
-            {'name': 'Ужин', 'slug': 'dinner', 'color': '#45B7D1'},
-            {'name': 'Десерт', 'slug': 'dessert', 'color': '#96CEB4'},
-            {'name': 'Напитки', 'slug': 'drinks', 'color': '#FFEAA7'},
+            {'name': 'Завтрак', 'slug': 'breakfast'},
+            {'name': 'Обед', 'slug': 'lunch'},
+            {'name': 'Ужин', 'slug': 'dinner'},
+            {'name': 'Десерт', 'slug': 'dessert'},
+            {'name': 'Напитки', 'slug': 'drinks'},
         ]
 
         tags = {}
@@ -79,8 +79,7 @@ class Command(BaseCommand):
             tag, created = Tag.objects.get_or_create(
                 slug=tag_data['slug'],
                 defaults={
-                    'name': tag_data['name'],
-                    'color': tag_data['color']
+                    'name': tag_data['name']
                 }
             )
             tags[tag.slug] = tag
