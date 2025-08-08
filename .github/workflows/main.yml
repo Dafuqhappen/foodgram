@@ -107,44 +107,40 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
-          # passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             set -e
             cd ~/foodgram
 
-            # sanity-check
-            [ -f docker-compose.production.yml ] || (echo "no compose file" && exit 1)
-            [ -f nginx.conf ] || (echo "no nginx.conf" && exit 1)
-
-            echo "== docker system prune =="
             sudo docker system prune -af || true
-
-            echo "== compose down =="
             sudo docker compose -f docker-compose.production.yml down --remove-orphans || true
-
-            echo "== pull images =="
             sudo docker compose -f docker-compose.production.yml pull
-
-            echo "== compose up =="
             sudo docker compose -f docker-compose.production.yml up -d
-
-            echo "== wait a bit =="
             sleep 8
 
-            echo "== ensure frontend volume has build =="
-            # Кладём СОДЕРЖИМОЕ /app/build в том frontend_build
-            sudo docker run --rm -v foodgram_frontend_build:/dest ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest \
-              sh -c 'rm -rf /dest/* && cp -r /app/build/* /dest/'
+            echo "== check frontend build inside image via service =="
+            # Запустим одноразовый контейнер сервиса frontend (с volume /app/result_build)
+            # и, если /app/build не пуст, скопируем файлы в /app/result_build
+            sudo docker compose -f docker-compose.production.yml run --rm frontend sh -lc '
+              set -e
+              echo "[frontend] ls -la /app/build:"
+              ls -la /app/build || true
+              if [ -d /app/build ] && [ "$(ls -A /app/build 2>/dev/null)" ]; then
+                rm -rf /app/result_build/* || true
+                cp -r /app/build/* /app/result_build/
+                echo "[frontend] copied build -> result_build"
+              else
+                echo "[frontend] WARNING: /app/build is empty or missing; skip copy"
+              fi
+            ' || true
 
             echo "== migrations & collectstatic =="
             sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py migrate --noinput
             sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py collectstatic --noinput
             sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py setup_review || true
 
-            echo "== reload nginx inside container =="
+            echo "== nginx reload =="
             sudo docker compose -f docker-compose.production.yml exec -T nginx nginx -t && \
             sudo docker compose -f docker-compose.production.yml exec -T nginx nginx -s reload || true
-
   notify:
     runs-on: ubuntu-latest
     needs: deploy
