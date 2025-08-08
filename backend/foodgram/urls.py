@@ -6,7 +6,6 @@ from django.urls import include, path
 from django.shortcuts import redirect
 from django.urls import reverse, NoReverseMatch
 
-from api.views import RecipeViewSet
 
 def short_link_redirect(request, pk):
     """
@@ -17,6 +16,7 @@ def short_link_redirect(request, pk):
     except NoReverseMatch:
         target = f"/recipes/{pk}/"
     return redirect(target, permanent=False)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
