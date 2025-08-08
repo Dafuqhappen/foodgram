@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Install backend deps
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
@@ -109,23 +109,29 @@ jobs:
             set -e
             cd ~/foodgram
 
-            echo "== compose down/up =="
-            sudo docker system prune -af || true
+            echo "== compose down/pull/up =="
             sudo docker compose -f docker-compose.production.yml down --remove-orphans || true
             sudo docker compose -f docker-compose.production.yml pull
             sudo docker compose -f docker-compose.production.yml up -d
             sleep 8
 
-            echo "== ensure frontend build is in volume =="
-            sudo docker run --rm \
-              -v foodgram_frontend_build:/target \
-              ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest \
-              sh -lc 'ls -la /app/build && rm -rf /target/* && cp -r /app/build/* /target/'
+            echo "== import ingredients =="
+            sudo docker compose -f docker-compose.production.yml exec -T backend \
+              python manage.py import_ingredients || true
 
-            echo "== migrations & collectstatic =="
-            sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py migrate --noinput
-            sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py collectstatic --noinput
-            sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py setup_review || true
+            echo "== migrate & collectstatic =="
+            sudo docker compose -f docker-compose.production.yml exec -T backend \
+              python manage.py migrate --noinput
+            sudo docker compose -f docker-compose.production.yml exec -T backend \
+              python manage.py collectstatic --noinput
+
+            echo "== ensure frontend build copied to volume =="
+            sudo docker compose -f docker-compose.production.yml run --rm frontend \
+              sh -lc 'ls -la /app/build && rm -rf /app/result_build/* && cp -r /app/build/* /app/result_build/'
+
+            echo "== optional demo data (review) =="
+            sudo docker compose -f docker-compose.production.yml exec -T backend \
+              python manage.py setup_review || true
 
             echo "== nginx reload =="
             sudo docker compose -f docker-compose.production.yml exec -T nginx nginx -t
