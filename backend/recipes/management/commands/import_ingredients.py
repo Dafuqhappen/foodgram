@@ -9,13 +9,14 @@ class Command(BaseCommand):
     help = "Импортирует ингредиенты из data/ingredients.json в базу"
 
     def handle(self, *args, **options):
-        base_dir = Path(__file__).resolve().parent.parent.parent.parent.parent
-        data_file = base_dir / "data" / "ingredients.json"
+        data_file = Path("/app/data/ingredients.json")
 
         if not data_file.exists():
+            base_dir = Path(__file__).resolve().parents[5]
+            data_file = base_dir / "data" / "ingredients.json"
+
+        if not data_file.exists() or not data_file.is_file():
             raise CommandError(f"Файл не найден: {data_file}")
-        if not data_file.is_file():
-            raise CommandError(f"Не файл: {data_file}")
 
         try:
             raw = data_file.read_text(encoding="utf-8")

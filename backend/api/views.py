@@ -104,28 +104,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=False, methods=["get"], permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
-        user = request.user
-        cart_items = RecipeIngredient.objects.filter(
-            recipe__in_carts__user=user
-        ).values(
-            'ingredient__name', 'ingredient__measurement_unit'
-        ).annotate(
-            total_amount=Sum('amount')
-        ).order_by('ingredient__name')
+    user = request.user
+    cart_items = (
+        RecipeIngredient.objects
+        .filter(recipe__in_carts__user=user)
+        .values('ingredient__name', 'ingredient__measurement_unit')
+        .annotate(total_amount=Sum('amount'))
+        .order_by('ingredient__name')
+    )
 
-        shopping_list = "\n".join(
-            [
-                f"{item['ingredient__name']} "
-                f"({item['ingredient__measurement_unit']}) — "
-                f"{item['total_amount']}"
-                for item in cart_items
-            ]
-        )
-        response = Response(shopping_list, content_type="text/plain")
-        response['Content-Disposition'] = (
-            'attachment; filename="shopping_list.txt"'
-        )
-        return response
+    lines = [
+        f"{item['ingredient__name']} "
+        f"({item['ingredient__measurement_unit']}) — "
+        f"{item['total_amount']}"
+        for item in cart_items
+    ]
+    content = "\r\n".join(lines)  # CRLF
+
+    response = HttpResponse(content, content_type="text/plain; charset=utf-8")
+    response['Content-Disposition'] = 'attachment; filename="shopping_list.txt"'
+    return response
 
     @action(
         detail=True,
