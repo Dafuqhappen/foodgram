@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
@@ -103,7 +104,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=False, methods=["get"], permission_classes=[IsAuthenticated]
     )
-
     def download_shopping_cart(self, request):
         user = request.user
         cart_items = (
@@ -122,8 +122,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ]
         content = "\r\n".join(lines)
 
-        response = HttpResponse(content, content_type="text/plain; charset=utf-8")
-        response['Content-Disposition'] = 'attachment; filename="shopping_list.txt"'
+        response = HttpResponse(
+            content, content_type="text/plain; charset=utf-8"
+        )
+        response['Content-Disposition'] = (
+            'attachment; filename="shopping_list.txt"'
+        )
         return response
 
     @action(
