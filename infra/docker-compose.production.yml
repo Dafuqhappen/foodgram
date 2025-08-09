@@ -19,6 +19,7 @@ services:
       - static:/app/static/
       - media:/app/media/
       - ./data:/app/data:ro
+      - ./fixtures.json:/app/fixtures.json:ro
 
   frontend:
     container_name: foodgram-front
